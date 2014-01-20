@@ -88,13 +88,13 @@
           <div class="call_to_action_button">
             <% if @campaign.expired? %>
              <% if @campaign.include_rewards_claimed? %>
-             	 <div id="backing">
-        			<ul>
-        				<li class="stats-awards">
-            				<%= @campaign.rewards_claimed %> Claimed Rewards
-          				</li>
-        			</ul>
-        		</div>
+            <div id="backing">
+              <ul>
+                <li class="stats-awards">
+                  <%= @campaign.rewards_claimed %> Claimed Rewards
+                </li>
+              </ul>
+            </div>
               <% end %>
               <span class="blue_button expired">
                 <%= @campaign.primary_call_to_action_button %>
@@ -175,15 +175,15 @@
                   <p class="description"><%= reward.description %></p>
                   <p class="delivery">Estimated Delivery: <%= reward.delivery_date %></p>
                   <% if @campaign.expired? %>
-                  	<% if reward.include_claimed? %>
-             	 	 <p class="claimed">
-                    	<%= reward.payments.length %> <%= "of #{reward.number}" unless reward.unlimited? %> claimed <%= '(All gone!)' if reward.sold_out? %>
-                  	 </p>
-              	  	<% end %>
+                    <% if reward.include_claimed? %>
+                  <p class="claimed">
+                    <%= reward.payments.length %> <%= "of #{reward.number}" unless reward.unlimited? %> claimed <%= '(All gone!)' if reward.sold_out? %>
+                  </p>
+                    <% end %>
                   <% else %>
-                  	 <p class="claimed">
-                    	<%= reward.payments.length %> <%= "of #{reward.number}" unless reward.unlimited? %> claimed <%= '(All gone!)' if reward.sold_out? %>
-                  	 </p>
+                  <p class="claimed">
+                    <%= reward.payments.length %> <%= "of #{reward.number}" unless reward.unlimited? %> claimed <%= '(All gone!)' if reward.sold_out? %>
+                  </p>
                   <% end %>
                 </a>
               </li>
