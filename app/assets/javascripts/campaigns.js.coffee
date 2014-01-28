@@ -94,6 +94,7 @@ Crowdhoster.campaigns =
   cardResponseHandler: (response) ->
     form = document.getElementById('payment_form')
     request_id_token = response.request_id
+    $('#client_timestamp').val((new Date()).getTime())
     switch response.status
       when 201
         card_token = response.card.id
@@ -101,27 +102,8 @@ Crowdhoster.campaigns =
         form.appendChild(card_input[0])
         card_input = $('<input name="ct_request_id" value="' + request_id_token + '" type="hidden" />');
         form.appendChild(card_input[0])
-        $('#client_timestamp').val((new Date()).getTime())
         form.submit()
       else
-        $.fn.serializeObject = ->
-          arrayData = @serializeArray()
-          objectData = {}
-          $.each arrayData, ->
-            if @value?
-              value = @value
-            else
-              value = ''
-
-            if objectData[@name]?
-              unless objectData[@name].push
-                objectData[@name] = [objectData[@name]]
-
-              objectData[@name].push value
-            else
-              objectData[@name] = value
-          objectData
-
         $('#refresh-msg').hide()
         $('#errors').append('<p>An error occurred. Please check your credit card details and try again.</p><br><p>If you continue to experience issues, please <a href="mailto:team@crowdhoster.com?subject=Support request for a payment issue&body=PLEASE DESCRIBE YOUR PAYMENT ISSUES HERE">click here</a> to contact support.</p>')
         $('#errors').show()
