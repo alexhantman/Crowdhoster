@@ -111,16 +111,12 @@ Crowdhoster.campaigns =
         $button = $('button[type="submit"]')
         $button.attr('disabled', false).html('Confirm payment of $' + $button.attr('data-total') )
 
-        # hide from ourselves
-        $('#card_number').removeAttr('name')
-        $('#security_code').removeAttr('name')
         data = $(form).serializeObject()
         data.ct_request_id = request_id_token
         data.ct_request_error_id = response.error_id
-
-        # re-add for user
-        $('#card_number').attr('name', 'card_number')
-        $('#security_code').attr('name', 'security_code')
+        # make sure we don't have sensitive info
+        delete data.card_number
+        delete data.security_code
 
         error_path = form.getAttribute('data-error-action')
         $.post(error_path, data)
