@@ -87,7 +87,7 @@ class CampaignsController < ApplicationController
     # TODO: Check to make sure the amount is valid here
 
     # Create the payment record in our db, if there are errors, redirect the user
-    payment_params = basic_payment_info
+    payment_params = basic_payment_info(params)
     @payment = @campaign.payments.new(payment_params)
 
     if !@payment.valid?
@@ -174,7 +174,7 @@ class CampaignsController < ApplicationController
   end
 
   def checkout_error
-    payment_info = basic_payment_info
+    payment_info = basic_payment_info(params)
     payment_info[:ct_request_error_id] = params[:ct_request_error_id]
     payment_info[:status] = 'error'
     payment = @campaign.payments.new(payment_info)
@@ -206,7 +206,7 @@ class CampaignsController < ApplicationController
   end
 
   # create simple payment hash from params. does not include fees/payment amounts/cc info.
-  def basic_payment_info
+  def basic_payment_info(params)
     client_timestamp = params.has_key?(:client_timestamp) ? params[:client_timestamp].to_i : nil
     ct_request_id = params.has_key?(:ct_request_id) ? params[:ct_request_id] : nil
     fullname = params[:fullname]
