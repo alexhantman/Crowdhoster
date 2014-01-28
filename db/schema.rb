@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140116122844) do
+ActiveRecord::Schema.define(:version => 20140128001609) do
 
   create_table "campaigns", :force => true do |t|
     t.string   "name"
@@ -126,6 +126,8 @@ ActiveRecord::Schema.define(:version => 20140116122844) do
     t.text     "additional_info"
     t.string   "billing_postal_code"
     t.integer  "client_timestamp",      :limit => 8
+    t.string   "ct_request_id"
+    t.string   "ct_request_error_id"
   end
 
   create_table "rewards", :force => true do |t|

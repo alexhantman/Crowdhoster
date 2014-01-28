@@ -92,12 +92,15 @@ Crowdhoster.campaigns =
 
 
   cardResponseHandler: (response) ->
+    form = document.getElementById('payment_form')
+    request_id_token = response.request_id
     switch response.status
       when 201
-        token = response.card.id
-        input = $('<input name="ct_card_id" value="' + token + '" type="hidden" />');
-        form = document.getElementById('payment_form')
-        form.appendChild(input[0])
+        card_token = response.card.id
+        card_input = $('<input name="ct_card_id" value="' + card_token + '" type="hidden" />');
+        form.appendChild(card_input[0])
+        card_input = $('<input name="ct_request_id" value="' + request_id_token + '" type="hidden" />');
+        form.appendChild(card_input[0])
         $('#client_timestamp').val((new Date()).getTime())
         form.submit()
       else
@@ -107,5 +110,27 @@ Crowdhoster.campaigns =
         $('.loader').hide()
         $button = $('button[type="submit"]')
         $button.attr('disabled', false).html('Confirm payment of $' + $button.attr('data-total') )
-        $('#card_number').attr('name', 'card_number');
-        $('#security_code').attr('name', 'security_code');
+        $('#card_number').attr('name', 'card_number')
+        $('#security_code').attr('name', 'security_code')
+        error_path = form.getAttribute('data-error-action')
+        data =
+          authenticity_token: form.elements['authenticity_token'].value
+          fullname: form.elements['fullname'].value
+          email: form.elements['email'].value
+          billing_postal_code: form.elements['billing_postal_code'].value
+          ct_user_id: form.elements['ct_user_id'].value
+          quantity: form.elements['quantity'].value
+          amount: form.elements['amount'].value
+          client_timestamp: (new Date()).getTime()
+          ct_request_id: request_id_token
+          ct_request_error: response.error
+          ct_request_error_id: response.error_id
+          # shipping fields that may or may not appear in the form
+          address_one: if form.elements['address_one'] then form.elements['address_one'].value else ''
+          address_two: if form.elements['address_two'] then form.elements['address_two'].value else ''
+          city: if form.elements['city'] then form.elements['city'].value else ''
+          state: if form.elements['state'] then form.elements['state'].value else ''
+          postal_code: if form.elements['postal_code'] then form.elements['postal_code'].value else ''
+          country: if form.elements['country'] then form.elements['country'].value else ''
+
+        $.post(error_path, data)
