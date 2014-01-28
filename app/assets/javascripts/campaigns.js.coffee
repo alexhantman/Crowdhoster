@@ -104,33 +104,41 @@ Crowdhoster.campaigns =
         $('#client_timestamp').val((new Date()).getTime())
         form.submit()
       else
+        $.fn.serializeObject = ->
+          arrayData = @serializeArray()
+          objectData = {}
+          $.each arrayData, ->
+            if @value?
+              value = @value
+            else
+              value = ''
+
+            if objectData[@name]?
+              unless objectData[@name].push
+                objectData[@name] = [objectData[@name]]
+
+              objectData[@name].push value
+            else
+              objectData[@name] = value
+          objectData
+
         $('#refresh-msg').hide()
         $('#errors').append('<p>An error occurred. Please check your credit card details and try again.</p><br><p>If you continue to experience issues, please <a href="mailto:team@crowdhoster.com?subject=Support request for a payment issue&body=PLEASE DESCRIBE YOUR PAYMENT ISSUES HERE">click here</a> to contact support.</p>')
         $('#errors').show()
         $('.loader').hide()
         $button = $('button[type="submit"]')
         $button.attr('disabled', false).html('Confirm payment of $' + $button.attr('data-total') )
+
+        # hide from ourselves
+        $('#card_number').removeAttr('name')
+        $('#security_code').removeAttr('name')
+        data = $(form).serializeObject()
+        data.ct_request_id = request_id_token
+        data.ct_request_error_id = response.error_id
+
+        # re-add for user
         $('#card_number').attr('name', 'card_number')
         $('#security_code').attr('name', 'security_code')
-        error_path = form.getAttribute('data-error-action')
-        data =
-          authenticity_token: form.elements['authenticity_token'].value
-          fullname: form.elements['fullname'].value
-          email: form.elements['email'].value
-          billing_postal_code: form.elements['billing_postal_code'].value
-          ct_user_id: form.elements['ct_user_id'].value
-          quantity: form.elements['quantity'].value
-          amount: form.elements['amount'].value
-          client_timestamp: (new Date()).getTime()
-          ct_request_id: request_id_token
-          ct_request_error: response.error
-          ct_request_error_id: response.error_id
-          # shipping fields that may or may not appear in the form
-          address_one: if form.elements['address_one'] then form.elements['address_one'].value else ''
-          address_two: if form.elements['address_two'] then form.elements['address_two'].value else ''
-          city: if form.elements['city'] then form.elements['city'].value else ''
-          state: if form.elements['state'] then form.elements['state'].value else ''
-          postal_code: if form.elements['postal_code'] then form.elements['postal_code'].value else ''
-          country: if form.elements['country'] then form.elements['country'].value else ''
 
+        error_path = form.getAttribute('data-error-action')
         $.post(error_path, data)
